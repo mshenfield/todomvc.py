@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "brython": "^3.5.1",
+    "reveal.js": "^3.6.0"
+  }
+}

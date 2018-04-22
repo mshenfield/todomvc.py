@@ -1,0 +1,37 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Brython Demo</title>
+    <script src="node_modules/brython/brython.js"></script>
+    <script src="node_modules/brython/brython_stdlib.js"></script>
+    <style>
+      #app {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      button {
+        width: 50px;
+      }
+    </style>
+  </head>
+  <body onload="brython(2)">
+    <div id='app'>
+      <h1 id='value-el'>1</h1>
+      <button id='decrement-btn'>--</button>
+      <button id='increment-btn'>++</button>
+    </div>
+    <script type="text/python">
+      from browser import document
+
+      def increment(_):
+          document['value-el'].text = int(document['value-el'].text) + 1
+
+      def decrement(_):
+          document['value-el'].text = int(document['value-el'].text) - 1
+
+      document['increment-btn'].bind('click', increment)
+      document['decrement-btn'].bind('click', decrement)
+    </script>
+  </body>
+</html>
