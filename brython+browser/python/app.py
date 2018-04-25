@@ -66,12 +66,7 @@ class Main(H.SECTION):
 
         super().__init__(
             [
-                H.INPUT(
-                    Class='toggle-all',
-                    checked=toggle_all,
-                    id='toggle-all',
-                    type='checkbox',
-                ),
+                ToggleAllInput(toggle_all),
                 H.LABEL(
                     'Mark all as complete',
                     For='toggle-all',
@@ -81,6 +76,26 @@ class Main(H.SECTION):
             Class='main',
             style={'display': 'block' if len(todos) else 'none'},
         )
+
+
+class ToggleAllInput(H.INPUT):
+    def __init__(self, toggle_all):
+        super().__init__(
+            Class='toggle-all',
+            checked=toggle_all,
+            id='toggle-all',
+            type='checkbox',
+        )
+        self.toggle_all = toggle_all
+        self.bind('click', self.toggle)
+
+    def toggle(self, event):
+        def update(state):
+            state.toggle_all = not self.toggle_all
+            for t in state.todos:
+                t.completed = state.toggle_all
+
+        update_state(update)
 
 
 class Footer(H.HEADER):
