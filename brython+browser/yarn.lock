@@ -3,8 +3,8 @@
 
 
 brython@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/brython/-/brython-3.5.0.tgz#1f7c1e0be100180fb72aad9e361385ca2ce04da9"
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/brython/-/brython-3.5.1.tgz#a69345b549d1bd8e1df0599c205d4a44bf22fb01"
 
 todomvc-app-css@^2.0.0:
   version "2.1.1"

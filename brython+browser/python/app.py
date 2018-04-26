@@ -6,6 +6,8 @@ from browser import (
 from browser.local_storage import storage
 import json
 
+import attr
+
 
 class App(H.SECTION):
     def __init__(self, state):
@@ -45,7 +47,6 @@ class NewTodoInput(H.INPUT):
         todo_text = self.value.strip()
         make_new_todo = event.key == 'Enter' and todo_text
         if make_new_todo:
-            self.value = ''
             def update(state):
                 state.todos.append(Todo(todo_text))
             update_state(update)
@@ -86,12 +87,11 @@ class ToggleAllInput(H.INPUT):
             id='toggle-all',
             type='checkbox',
         )
-        self.toggle_all = toggle_all
         self.bind('click', self.toggle)
 
     def toggle(self, event):
         def update(state):
-            state.toggle_all = not self.toggle_all
+            state.toggle_all = event.target.checked
             for t in state.todos:
                 t.completed = state.toggle_all
 
@@ -283,55 +283,35 @@ class TodoDestroy(H.BUTTON):
         update_state(update)
 
 
+@attr.s
 class Todo:
     """An item in a todo list."""
-    def __init__(self, text='', completed=False):
-        self.text = text
-        self.completed = completed
-        self.editing = False
+    text = attr.ib(default='')
+    completed = attr.ib(default=False)
+    editing = attr.ib(default=False)
+
+
+@attr.s
+class State:
+    todos = attr.ib(default=attr.Factory(list))
+    toggle_all = attr.ib(default=False)
+    filter = attr.ib(default=ALL_FILTER)
 
     def store(self):
-        return {
-            'text': self.text,
-            'completed': self.completed,
-        }
-
-class State:
-    def __init__(
-        self,
-        new_todo_text='',
-        todos=None,
-        toggle_all=False,
-        filter=ALL_FILTER,
-    ):
-        self.new_todo_text = new_todo_text
-        self.todos = todos or []
-        self.toggle_all = toggle_all
-        self.filter = filter
-
+        storage['todoapp'] = json.dumps(attr.asdict(self))
 
     @classmethod
     def from_storage(cls):
         state = cls()
-        print('checking')
         if 'todoapp' in storage:
-            print('loading')
-            stored_state = json.loads(storage['todoapp'])
-            state.new_todo_text = stored_state['new_todo_text']
-            state.todos = [Todo(**todo_dict) for todo_dict in stored_state['todos']]
-            state.toggle_all = stored_state['toggle_all']
-            state.filter = stored_state['filter']
+            state_dict = json.loads(storage['todoapp'])
+            print(state_dict)
+            todos_dicts = state_dict.pop('todos')
+            state = State(
+                todos=[Todo(**td) for td in todos_dicts],
+                **state_dict
+            )
         return state
-
-    def store(self):
-        print('storing')
-        storage['todoapp'] = json.dumps({
-            'new_todo_text': self.new_todo_text,
-            'todos': [todo.store() for todo in self.todos],
-            'toggle_all': self.toggle_all,
-            'filter': self.filter,
-        })
-        print(storage['todoapp'])
 
 
 state = State.from_storage()

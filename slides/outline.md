@@ -2,7 +2,7 @@
 
 I'm Bill, a supportive, friendly leader of Pythonistas.  I want to see you display growth and confidence.
 
-[ ] - A point about growth and confidence
+[x] - A point about growth and confidence
 
 I'm Kayla, an NSS student. I want to learn about the general Python community, get excited about what's possible.  I'm new to this, so I need to have code examples and more exotic syntax explained.
 
@@ -13,7 +13,7 @@ I'm Kayla, an NSS student. I want to learn about the general Python community, g
 
 I'm Sean, I'm a cynical developer who thinks the idea of Python in the browser is preposterous.  I want density of information to dig into, and acknowledgement of constraints.
 
-[ ] - Acknowledge that this is for hobby projects, not for production
+[x] - Acknowledge that this is for hobby projects, not for production
 [ ] - Hint at specific technically deep possibilities
 
 I'm Amara, a data scientist.  I want to apply my Python skills to the frontend, but don't know how.  I'd like to be encouraged to get started and give this a shot with a fun example, and easy to imitate instructions.

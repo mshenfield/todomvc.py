@@ -22,7 +22,6 @@
         margin-top: 0px;
         margin-bottom: -10px;
       }
-
     </style>
   </head>
   <body>
@@ -106,7 +105,7 @@
               our fingertips.
             </aside>
           </section>
-          <section class="scipy-example">
+          <section class="sklearn-example">
             <pre><code data-trim>
               from sklearn import datasets
               digits = datasets.load_digits()
@@ -119,7 +118,7 @@
             <img style="box-shadow: none" data-src="img/handwritten-character.png"/>
             <aside class="notes">
               For example, using machine learning to identify handwritten
-              characters with sci-kit-learn.
+              characters with sci-kit-learn in just a few lines of code.
             </aside>
           </section>
           <section class="click-example">
@@ -154,7 +153,8 @@
               It's fun to see what you can come up with, and you don't mind
               wading through Github issues and unimplemented features to
               get there.  Python to JavaScript transpilation tools still
-              have a lot of rough edges.
+              have a lot of rough edges, so this is best used for side projects,
+              not work.
             </aside>
           </section>
           <section>
@@ -166,10 +166,12 @@
               vibrant community of developers using and creating tools with
               it.
 
-              It's still a language where you actually have to think about
+              <p>
+                It's still a language where you actually have to think about
               which for loop you're using, bind functions before passing
               them to callbacks, and where just below the surface lurks an
               entirely unexpected model of classes
+            </p>
             </aside>
           </section>
         </section>
@@ -179,10 +181,10 @@
             <aside class="notes">
               Features
               <ul>
+                <li>Use local storage between sessions</li>
                 <li>Type in a todo</li>
                 <li>Edit the todo (Hola)</li>
                 <li>Mark it as completed</li>
-                <li>Maintain local state</li>
                 <li>Show active</li>
                 <li>Show completed</li>
                 <li>Show all</li>
@@ -191,98 +193,434 @@
             </aside>
           </section>
           <section>
-            <pre><code data-trim>
-              class Todo:
-                  """An item in a todo list."""
-                  def __init__(self, text='', completed=False):
-                      self.text = text
-                      self.completed = completed
-                      self.editing = False
-            </code></pre>
-            <pre><code data-trim data-noescape>
-              class TodoInput:
-                  """An input that allows users to create a new Todo item"""
-                  def on_input(event):
-                      if event.key != 'Enter':
-                          return
+            <style scoped>
+              .reveal pre code {
+                max-height: inherit;
+              }
+            </style>
+            <pre><code styledata-trim>
+            from browser import html
 
-                      todo_text = event.target.value.strip()
-                      if not todo_text:
-                          return
-                      self.props.add_todo((Todo(todo_text))
+            class NewTodoInput(html.INPUT):
+                def __init__(self):
+                    super().__init__(self)
+                    self.bind('keyup', self.on_keyup)
 
-                  def render(self):
-                      return React.createClass(
-                          'input',
-                          {},
-                          {
-                            'onInput': self.on_input,
-                            'type': 'text',
-                          },
-                      )
+                def on_keyup(self, event):
+                    """Generates a new Todo from the text in our input, skipping empty strings"""
+                    todo_text = self.value.strip()
+                    make_new_todo = event.key == 'Enter' and todo_text
+                    if make_new_todo:
+                        self.value = ''
+                        state.todos.append(Todo(todo_text))
             </code></pre>
             <aside class="notes">
-              First fragment shows some basic frontend rendering code
+              This is the text input for generating a new Todo, using a
+              Python interpreter called Brython.
+
+              There are a few things to call out.  The tool I'm using has a
+              simple wrapper called `html`, which exposes classes for
+              all DOM elements.  In this case we're creating a customized
+              &ltinput> tag, with a key-up listener that generates a new
+              `Todo` instance and clears the input when you press "Enter".
+
+              <p>
+                You can see we're able to use Python to glue together a DOM
+              interaction with our data model pretty easily.  With Brython,
+              the tools and semantics are very similar.
+            </p>
+            </aside>
+          </section>
+          <section>
+            <pre><code class="python" data-trim>
+            from browser.local_storage import storage
+            import attr
+
+            @attr.s
+            class State:
+                todos = attr.ib(default=attr.Factory(list))
+                toggle_all = attr.ib(default=False)
+                filter = attr.ib(default=ALL_FILTER)
+
+                def store(self):
+                    storage['todoapp'] = json.dumps(attr.asdict(self))
+
+                @classmethod
+                def from_storage(cls):
+                    state = cls()
+                    if 'todoapp' in storage:
+                        state_dict = json.loads(storage['todoapp'])
+                        todos_dicts = state_dict.pop('todos')
+                        state = State(
+                            todos=[Todo(**td) for td in todos_dicts],
+                            **state_dict
+                        )
+                    return state
+            </code></pre>
+            <aside class="notes">
+              This class holds the global state of the app, and can be
+              dumped and restored from the browser's local storage API.
+
+            <p>  `attrs` is a third party library that brings back the joy
+              of writing classes. The `attr` dot `s` decorator at the top
+              uses the `attr` dot `ib` class variables to construct a class
+              with double underscore methods like __init__, __repr__, and __cmp__
+              for you.</p>
+
+              <p>The local storage API allows you to store strings on the client
+              and access them across page visits.
+              `browser.local_storage.storage` is a Python wrapper around the
+              browser local storage API that allows you to treat it much like
+              a normal python dict.
+            </p>
             </aside>
           </section>
         </section>
-        <section data-background-color='#000'>
-          <h1 style='color: white;'>Part 2: The Wild West</h1>
-        </section>
         <section>
-          <h2>Transcrypt</h2>
-          Transpiled (think coffee-script) with good dev tools
-          <aside class="notes">
-            Python 3.
+          <section>
+            <h1>Tools</h1>
+            <aside class="notes">
+              We'll do a quick overview of the Python to JavaScript
+              ecosystem, and then deep dive into two popular choices:
+              Brython and Transcrypt. For both tools, we'll cover
 
-            Embraces the power of the JS ecosystem, at the expense of Python
-            semantics.  Best experience available.
-          </aside>
-        </section>
-        <section>
-          <h2>Brython</h2>
-          Interpreter has to ship with your code, unsurprising but slow
-          <aside class="notes">
-            Python 3. Python semantics at the expense of performance.
+              <ul>
+                <li>Supported python version</li>
+                <li>How to get it set up</li>
+                <li>Pros and Cons</li>
+                <li>An example that highlights its strengths</li>
+              </ul>
+            </aside>
+          </section>
+          <section>
+            <h1>There isn't a perfect Python to JS solution</h1>
+            <div class="fragment">
+              <style scoped>
+                ul li {
+                  list-style: none;
+                }
 
-            The `browser` addon doesn't compare to other JS tooling
-            like React and Vue.js, or even jQuery.  I want to get
-            away from DOM manipulation, not have a new way of doing it.
-          </aside>
+                /* Bigger check boxes */
+                input {
+                  transform: scale(2);
+                }
+              </style>
+              <ul>
+                <li><input checked type="checkbox"/> syntax compatibility</li>
+                <li><input type="checkbox"/> Python behavior</li>
+                <li><input type="checkbox"/> native JS speed</li>
+                <li><input type="checkbox"/> stdlib/3rd party support</li>
+                <li><input type="checkbox"/> easy JS interop</li>
+              </ul>
+            </div>
+            <aside class="notes">
+              There isn't a perfect Python to JavaScript solution out there
+              ...yet (press down).
+
+              <p>
+              To qualify as Python to JavaScript, the syntax actually has to
+              look like Python.  This means almost every library implements
+              standard python syntax, and features tied closely to syntax,
+              like basic <code>class</code>es, <code>yield</code>, and
+              list comprehensions.
+            </p>
+            <p>
+              When we talk about behavior, we mean the behavior as seen
+              in CPython, the <code>Python</code> interpreter most of us
+              are familiar with. A typical tradeoff is (clicks on each)
+              native JS speed and easier interop, but sacrificing semantics
+              that are expensive or clunky to implement in JavaScript,
+              such as operator overloading, or non-string dictionary keys.
+            </p>
+            <p>
+              On the other side (unchecks boxes), existing solutions that
+              implement Python behavior (checks) and stdlib or 3rd party
+              lib support haven't figured out how to do it fast yet.
+            </p>
+            </aside>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>Transcrypt</h1>
+            <p><a href="https://transcrypt.org">transcrypt.org</a></p>
+            <p>A transpiler with a focus on a small, lean runtime, and JS interop</p>
+            <p>Python 3</p>
+            <aside class="notes">
+              Transcrypt's is a program that transpiles and minifies Python files
+              on the server into a JS payload.  It's philosophy is "Lean, fast, open".
+              and it makes the decision to choose JavaScript compatibility and
+              performance over Python interop.
+            </aside>
+          </section>
+          <section>
+            <h1>Setup</h1>
+            <pre><code class="bash" data-trim>
+              pip install transcrypt
+              # Transpile to ES6 with annotated source maps
+              transcrypt -m -a python/app.py
+            </code></pre>
+            <aside class="notes">
+              Getting set up is easy. `pip install transcrypt` and run it
+              on your appliations entry point.  `transcrypt` will try to
+              import and transpile any std library and third party libraries
+              it runs into - but be warned, they might not behave as expected.
+              The `-a -m` are to generate annotated source maps.
+            </aside>
+          </section>
+          <section>
+            <h2>Pros</h2>
+            <ul>
+              <li>No performance penalty</li>
+              <li>Source maps let you debug in the browser</li>
+              <li>Compatible with React, Vue.js, WebPack</li>
+            </ul>
+            <aside class="notes">
+              The choice to embrace the JS ecosystem is pragmatic,
+              and the Transcrypt tool itself is well developed.
+
+              Python's batteries included approach means a hefty
+              standard library.  For Transcrypt, this means embracing
+              the giant JavaScript ecosystem.  This means it's easy
+              to take advantage of React or Vue, but it also means
+              it's much harder to experiment with Python tools on
+              the frontend, and you have to be more conscious of
+              JS drawbacks.
+            </aside>
+          </section>
+          <section>
+            <h2>Cons</h2>
+            <ul>
+              <li>Semantic differences are a pain</li>
+            </ul>
+            <pre class="fragment fade-in"><code class="python">
+              __pragma__('kwargs')
+              def sum_three(a, b=1, c=2):
+                return a + b + c
+              __pragma__('nokwargs')
+              ...
+              __pragma__('kwargs')
+              sum_three(1, c=5)
+              # 7
+              __pragma__('nokwargs')
+            </code></pre>
+            <aside class="notes">
+              <p>
+                Really the main drawback of Transcrypt is the lack of Python
+                semantics.  Transcrypt supports basic python syntax, but
+                basic facilities like operator overloading, automatic truth value
+                conversion and named parameters have to be switched on and off
+                locally.  In addition, Transcrypt dicts are actually JavaScript
+                objects, so don't support non-string values.
+              </p>
+
+              <p>
+                (press down)
+                Here's a quick example of what it takes to turn on
+                named parameters in Transcrypt - it has to be called
+                in the module, and whenever any callers want to use
+                named parameters.
+              </p>
+
+              <p>
+                You can use a flag to the command line tool
+                to globally enable or disable various Python semantics,
+                such as <code>-k</code> to turn on keyword arguments
+                for every function.  I'd like to see something in the future
+                that allowed you to configure transcrypt at the module
+                level, so that behavior wasn't dependent on a command line
+                flag.
+              </p>
+            </aside>
+          </section>
         </section>
         <section>
-          <h2>PyPyjs</h2>
-          The PyPy project compiled to ASM.js and customized to generate JS
+          <section>
+            <h1>Brython</h1>
+            <p><a href="http://brython.info">brython.info</a></p>
+            <p>An in-browser Python interpreter that allows you to run <code>&ltscript type="text/python"></code></p>
+            <p>Python 3</p>
+            <aside class="notes">
+              <p>
+                Brython runs an entire Python interpeter in the browser,
+                which allows you to use scripts of type <code>text/python</code>.
+                Part of Brython's goal is Python interop - it's behavior is
+                much closer to the CPython experience, and stdlib support is
+                significantly better than Transcrypt.
+
+                It's a fun and heady experience to just be able to run some Python,
+                but it does have some serious drawbacks in terms of performance.
+              </p>
+            </aside>
+          </section>
+          <section>
+            <h1>Setup</h1>
+            <pre><code class="bash">
+              mkdir myproject && cd myproject
+              pip install brython
+              # Create a new folder with your brython app
+              python -m brython --install
+              #├── demo.html
+              #├── brython.js
+              #├── brython_stdlib.js
+              python -m brython --server
+            </code></pre>
+            <aside class="notes">
+              <p>
+                Brython's setup is a little more involved.  You can install it
+                using `pip` or `npm` - the module itself is basically a scaffolding
+                and project management tool.
+              </p>
+
+              <p>
+                The project generates a directory with the Brython JS interpreter
+                and, separately, the portion of the std python library it implements.
+              </p>
+              <p>
+                Brython also has the ability to add a third party library or
+                package from the standard library to the project. Note that
+                you can't transpile Brython directly - you have to load it
+                in the browser for now.
+              </p>
+            </aside>
+          </section>
+          <section>
+            <h1>Pros</h1>
+            <ul>
+              <li>Standard and third party libary support</li>
+              <li>Less thinking about JavaScript</li>
+            </ul>
+            <aside class="notes">
+              Standard and third party library support means you
+              can use some of the tools you already enjoy in
+              the browser.  There's also more potential for code
+              sharing between the backend and the frontend.
+
+              <p>
+                Brython hides JavaScript better.
+              </p>
+            </aside>
+          </section>
+          <section>
+            <h1>Cons</h1>
+            <ul>
+              <li>Trickier to debug</li>
+              <li>Messier docs</li>
+              <li><code>browser</code> is probably a mis-step</li>
+              <li>Slow (more on next slide)</li>
+            </ul>
+            <aside class="notes">
+              Because the source code is transpiled and executed on the fly,
+              browser debugging and code exploration tools don't always work.
+              The best option is to print out stacktraces on errors.
+
+              <p>
+                The documentation is a little harder to parse through than
+                Transcrypt - it needs a little love and organization.
+              </p>
+
+              <p>
+                The <code>browser</code> module you saw earlier makes it
+                easier to interact with the DOM, but is probably a mis-step.
+                It's built in by default, but the DOM manipulation is
+                less intuitive than jQuery, and DOM manipulation as a whole
+                is less preferable to anything that uses a VirtualDOM like
+                React.
+              </p>
+
+              <p>
+                Slow - we'll see more in the next slide.
+              </p>
+            </aside>
+          </section>
+          <section>
+            <figure>
+              <img height=300 data-src="img/pypyjs-runtime.png"/>
+              <img height=300 data-src="img/pypyjs-loadtime.png"/>
+              <figcaption style="font-size: 14px">
+                <small>
+                  Performance metrics for <code>pypy.js</code> from <em><a href="http://arewepythonyet.com/">Are We Python Yet?</a></em>
+                </small>
+              </figcaption>
+            </figure>
+            Python intepreters in the browser are <em>really</em> slow
+            <aside class="notes">
+              These graphs are for PyPy.js, but they capture the main
+              problems of Brython as well.  The interpreter with standard
+              library is heavy, about 3.5 mb.  Hence you run into
+              multi-second load times.  When you add in libraries
+              that are loaded and transpiled on the fly, you quicly
+              get an app that is non-performant without some manual
+              tweaking.
+
+              <p>
+                Brython has a primitive bundler, but it isn't well
+                documented and doesn't match the power of WebPack, a common
+                JavaScript bundling utility. The current state is that
+                if you aren't using built-in brython and JavaScript utilites,
+                performance is a serious issue.
+              </p>
+            </aside>
+          </section>
+        </section>
+        <section>
+          <h1>Honorable Mentions</h1>
+          <ul>
+            <li><a href="pypyjs.org">PyPy.js</a></li>
+            <li><a href="http://skulpt.org/">Skulpt</a></li>
+            <li><a href="pyjs.org">PyJamas</a></li>
+          </ul>
           <aside class="notes">
-            Python 2
-            Python semantics at the expense of performance.
+            There are a lot of Python to JavaScript options available, I
+            wanted to quickly call out a few other popular or unique ones.
+
+            PyPy.js is a port of PyPy, an alternative Python compiler, that
+            runs in the browser, and runs Python 2.7. Unfortunately the project lost its lead
+            recently.
+
+            Skulpt is similar to Brython, but currently only supports Python 2.7.
+            It has an active community in education, and has been used to
+            implement in browser REPLs for web books and tutorials.
+
+            PyJamas is a now defunct project implemented a Python to JS transpiler
+            and widget toolkit.
+            It's something I'm interested in exploring, but it hasn't been
+            actively developed in a few years.
           </aside>
         </section>
         <section>
-          <h2>Skulpt</h2>
-          Another Python interpreter that runs in the browser, with an active community centered on education.
+          <h1>Conclusion</h1>
           <aside class="notes">
-            Python 2.
-            Python semantics at the expense of performance.
+            I was really excited at the idea of Python in the Browser,
+            and after writing this talk I'm sobered, but still excited
+            and chomping at the bit to write a real app with this and
+            use that as motiviation to improve the ecosystem. I think
+            there's a lot of room to grow to make Python in the browser
+            a seamless experience.
+
+            Some things I'm interested in exploring:
+
+            <ul>
+              <li>Making Brython compatible with WebPack</li>
+              <li>Auto-detecting feature usage for Transcrypt</li>
+              <li>Implementing a Python JSX using the Python AST module</li>
+              <li>Building a full stack Python project with Transcrypt, WebPack, and React</li>
+            </ul>
           </aside>
         </section>
         <section>
-          <figure>
-            <img height=300 data-src="img/pypyjs-runtime.png"/>
-            <img height=300 data-src="img/pypyjs-loadtime.png"/>
-            <figcaption style="font-size: 14px">
-              <small>
-                Performance metrics for <code>pypy.js</code> from <em><a href="http://arewepythonyet.com/">Are We Python Yet?</a></em>
-              </small>
-            </figcaption>
-          </figure>
-          <div>Running an interpreter in the browser gives Python semantics at the cost of performance</div>
+          <h1>Questions Please!</h1>
         </section>
         <section>
-          <h2>Questions Please!</h2>
-        </section>
-        <section>
-          <h2>Thank you!</h2>
+          <h1>Thank you!</h1>
+
+          <p>Made with <a href='revealjs.org'>reveal.js</a></p>
+          <p>Slides available at
+            <a target="_blank" href="https://github.com/mshenfield/todomvc.py/tree/master/slides"> <a href='revealjs.org'>
+              https://github.com/mshenfield/todomvc.py/tree/master/slides
+            </a>
+          </p>
         </section>
       </div>
     </div>
@@ -297,7 +635,8 @@
               async: true,
               callback: function() { hljs.initHighlightingOnLoad(); }
             },
-            { src: 'node_modules/reveal.js/plugin/notes/notes.js', async: true }
+            { src: 'node_modules/reveal.js/plugin/notes/notes.js', async: true },
+            { src: 'node_modules/reveal.js/plugin/zoom-js/zoom.js', async: true },
           ]
       });
     </script>
