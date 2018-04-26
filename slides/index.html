@@ -31,60 +31,164 @@
         <section>
           <h1>Python in the Browser</h1>
           <h2>A Guide for Intrepid Pythonistas</h2>
+
+          <aside class="notes">
+            Let's get started.
+
+            The web is an expressive and flexible medium for writing
+            rich applications.  Most of you probably write web applications
+            using a frontend framework like React or Vue. Today we'll be talking
+            about an exciting alternative for adventurous Pythonistas,
+            writing frontend web apps with Python!
+
+            <br/>
+
+            <!-- Use at the end -->
+            <div style="display: none">
+              I was really excited at the idea of Python in the Browser,
+              and after writing this talk I'm sobered, but still excited
+              and chomping at the bit to write a real app with this and
+              use that as motiviation to improve the ecosystem.
+            </div>
+          </aside>
         </section>
         <section class="who-am-i">
-          <h2>Who Am I?</h2>
+          <h1>✋ Hi, I'm Max </h1>
 
-          <!-- Make it easy to display these side by side, and lists with no bullets -->
-          <div style="display: flex; flex: 1 0 inherit; list-style: none">
-            <div>
-              <h3>Max Shenfield</h3>
-
-              <p>
-                <img height=50 data-src="img/github-logo.png"/><code>@mshenfield</code>
-              </p>
-              <p>
-                <img height=50 data-src="img/twitter-logo.png"/><code>@MaxShenfield</code>
-              </p>
-              <p>
-                <img data-src="img/code-for-nashville.jpg"/>
-              </p>
-              <p>
-                <img data-src="img/eventbrite.png"/>
-              </p>
-            </div>
-            <div style='flex-basis: 400px'>
-              <img data-src="img/me.jpg"/>
-            </div>
-          </div>
+          <p>
+          Github - @mshenfield
+          </p>
+          <p>
+          Twitter - @MaxShenfield
+          </p>
 
           <aside class='notes'>
-            The guy with the funny moustache on NashDev.
+            My name is Max Shenfield.  I use Python every day to build billing
+            and accounting software at Eventbrite.  On my free time, I work with Code for Nashville
+            to build open source software projects that improve Nashville.
 
-            You can find me as mshenfield on Github or MaxShenfield on Twitter.
-
-            Code for Nashville co-organizer, along with Nick Lorenson,
-            Corey Rice, Tim Eccleston. If you're interested in getting your
-            hands dirty building open source apps with the best causes in our
-            community, come talk to me.
-
-            Backend billing and accounting systems at Eventbrite.  Helping
-            ensure our organizer's have the funds they need to put on amazing
-            events.
+            You can find me on Github as mshenfield, or Twitter as Max Shenfield.
           </aside>
+        </section>
+        <section class="summary">
+          <section>
+            <h1>Summary</h1>
+            <ul>
+              <li>Why Python in the Browser?</li>
+              <li>Todo List Demo</li>
+              <li>Tools</li>
+              <li>Questions</li>
+            </ul>
+            <aside class='notes'>
+              My talk will first answer the question, "Why Python in the Browser?".
+              I'll then demo a Todo List app built entirely with Python and
+              show how some of it was built.  Afterwards, we'll talk about
+              the ecosystem of Python to JavaScript transpilation tools, and
+              deep dive into two of them, Brython and Transcrypt.  Finally,
+              we'll have a few minutes for questions at the end.
+            </aside>
+          </section>
         </section>
         <section>
           <section>
-            <h1>What?</h1>
+            <h1>Why Python in the Browser?</h1>
           </section>
           <section>
-            <h2>Web apps built with Python</h2>
-            <iframe
-              height=500
-              width=700
-              sandbox="allow-same-origin allow-scripts"
-              src="http://0.0.0.0:8080/">
-            </iframe>
+            <img style="box-shadow: none" data-src="img/python-logo.jpg"/>
+            <div>You 💛💙 Python</div>
+            <aside class="notes">
+              You're here, so you already work with Python in your
+              day job, are learning it as your first language, or
+              want to learn more about it.
+
+              Python is a great language.  It's emphasis on ease
+              and readability bring powerful domains right to
+              our fingertips.
+            </aside>
+          </section>
+          <section class="scipy-example">
+            <pre><code data-trim>
+              from sklearn import datasets
+              digits = datasets.load_digits()
+
+              from sklearn import svm
+              classifier = svm.SVC(gamma=0.001, C=100.)
+              classifier.fit(digits.data[:-1], digits.target[:-1])
+              clf.predict(digits.data[-1:])
+            </code></pre>
+            <img style="box-shadow: none" data-src="img/handwritten-character.png"/>
+            <aside class="notes">
+              For example, using machine learning to identify handwritten
+              characters with sci-kit-learn.
+            </aside>
+          </section>
+          <section class="click-example">
+            <pre><code data-trim>
+              import click
+
+              @click.command()
+              @click.option(
+                '--name',
+                help='The person to greet.'
+              )
+              def hello(name):
+                  click.echo(f'Hello {name}!')
+
+              if __name__ == '__main__':
+                  hello('PyNash')
+            </code></pre>
+            <aside class="notes">
+              And writing command line applications as complex as git
+              using click.
+
+              (Those are Python format strings, by the way - they
+              allow inserting python expressions directly into a
+              string and are available in Python 3.6 and up)
+            </aside>
+          </section>
+          <section>
+            <img style="box-shadow: none" data-src="img/beaker.png"/>
+            <div>You 💖 to experiment</div>
+
+            <aside class="notes">
+              It's fun to see what you can come up with, and you don't mind
+              wading through Github issues and unimplemented features to
+              get there.  Python to JavaScript transpilation tools still
+              have a lot of rough edges.
+            </aside>
+          </section>
+          <section>
+            <div>JavaScript still kind of sucks</div>
+            <!-- TODO: Examples -->
+            <aside class="notes">
+              JavaScript still kind of sucks.  It's greatest asset is that
+              we've been forced to use it, and so it has an astoundingly
+              vibrant community of developers using and creating tools with
+              it.
+
+              It's still a language where you actually have to think about
+              which for loop you're using, bind functions before passing
+              them to callbacks, and where just below the surface lurks an
+              entirely unexpected model of classes
+            </aside>
+          </section>
+        </section>
+        <section>
+          <section>
+            <a target="_blank" href="http://localhost:8080/"><h1>Todo List Demo</h1></a>
+            <aside class="notes">
+              Features
+              <ul>
+                <li>Type in a todo</li>
+                <li>Edit the todo (Hola)</li>
+                <li>Mark it as completed</li>
+                <li>Maintain local state</li>
+                <li>Show active</li>
+                <li>Show completed</li>
+                <li>Show all</li>
+                <li>Clear completed</li>
+              </ul>
+            </aside>
           </section>
           <section>
             <pre><code data-trim>
@@ -119,151 +223,6 @@
             </code></pre>
             <aside class="notes">
               First fragment shows some basic frontend rendering code
-            </aside>
-          </section>
-        </section>
-        <section>
-          <section>
-            <h1>Why?</h1>
-            <p class="fragment fade-up">Oh God, Why?</p>
-          </section>
-          <section>
-            <img style="box-shadow: none" data-src="img/beaker.png"/>
-            <div>You 💖 to experiment</div>
-
-            <aside class="notes">
-                It's the wild west out there - minimal debugging, editor support,
-                example code, and people to ask questions of. You want to expand
-                core features and build libraries, just to see what will
-                happen.
-            </aside>
-          </section>
-          <section>
-            <div>Operator overloading, decorators, and metaclasses enable great tools</div>
-
-            <aside class="notes">
-              Django, Flask, Click, Numpy - Python has an ecosystem
-              of tools with intuitive, friendly interfaces.
-
-              JavaScript has some ideas being taken from Python (iterator abstractio),
-              proxy attributes, Maps, but it doesn't have the same proven
-              track record yet.
-            </aside>
-          </section>
-          <section>
-            <div>Muli-platform languages are the future</div>
-
-            <br/>
-
-            <ul>
-              <li>Code sharing between client and server</li>
-              <li>One foundation (standards, syntax, semantics)</li>
-              <li>Lower barriers between frontend and backend</li>
-            </ul>
-            <aside class="notes">
-              <p>
-                Multi-platform languages are the future. Clojure and ClojureScript,
-                Node.js and JavaScript, show that great things can happen when users
-                have a consistent foundation to build off of on the frontend and backend.
-                There are unavoidable complexities, but nothing that you can't work around.
-                Still have to consider many runtimes.
-
-                Node.js existed because it actually did something well (evented architecture)
-                but also allowed the incredible amount of users with JavaScript experience
-                backgrounds to produce great code.  This inludes servers (Express),
-                some of the best command line intefaces (Chalk), server side rendering (React).
-              </p>
-            </aside>
-          </section>
-        </section>
-        <section>
-          <section>
-            <h1>Why Not?</h1>
-          </section>
-          <section>
-            JavaScript is actually...
-            <br/>
-            <img height=500 class="fragment fade-up" data-src="img/pretty-good.gif"/>
-
-            <aside class="notes">
-              ES6, ES7 have added workarounds for the infamous this and
-              hasOwnProperty hacks, nice functional syntax, better data
-              structures, and made it easier to write modular code.
-
-              And the ecosystem of frontend frameworks and tools is irreplicable.
-              React, Vue.js, Glimmer, and the 15 other frameworks support a host
-              of handy, well documented, and discoverable components.  You can
-              also do pretty incredible things on the web platform that aren't
-              web specific - PDF.js, Phaser.js (games), Howler.js (Audio),
-              D3.js (Data visualization).
-            </aside>
-          </section>
-          <section>
-            The worst part of writing frontend isn't actually writing JavaScript
-
-            <!-- JS version -->
-            <pre class="fragment current-visible"><code data-trim data-noescape>
-                class Avatar extends Component {
-                  render() {
-                    const borderRadius = this.props.square ? '0px' : '25px';
-
-                    return (
-                      &ltdiv>
-                        &ltimg
-                          src={this.props.imageUrl}
-                          style={`border-radius: ${borderRadius}; height: 50px;`}
-                        />
-                        &ltstrong>{this.props.name}&lt/strong>
-                      &lt/div>
-                    )
-                  }
-                }
-            </code></pre>
-
-            <!-- Python version -->
-            <pre class="fragment fade-up"><code data-trim data-noescape>
-                class Avatar(Component):
-                    def render(self):
-                        borderRadius = '0px' if self.props.square else '25px'
-
-                        # Disclaimer: We don't have a Python JSX yet.
-                        return (
-                          &ltdiv>
-                            &ltimg
-                              src={self.props.imageUrl}
-                              style={'border-radius: {}; height: 50px;'.format(borderRadius)}
-                            />
-                            &ltstrong>{self.props.name}&lt/strong>
-                          &lt/div>
-                        )
-            </code></pre>
-            <aside class="notes">
-              It's manipulating the DOM. Changing someone else's CSS comes close.
-
-              New frameworks have actually eliminated this.  The difference between
-              this (JS slides) and this (Python slides) isn't that big.  Many
-              times JS just serves as glue code.
-            </aside>
-          </section>
-          <section>
-            You can't escape the runtime
-
-            <aside class="notes">
-                Python is limited by the GIL.  JavaScript's representation of
-                objects, strings, regexes, as well as it's event-driven
-                architecture mean that you'll always have to consider
-                the runtime.
-
-                In lots of cases, Python in JS libraries will re-implement
-                Python stdlib functions in JavaScript instead of transpiling
-                the Python stdlib (for both performance and compatibility
-                reasons).  Some libraries use JS objects directly, so
-                you have to understand their limitations, like object keys being
-                restrictes to strings.
-
-                This is the case for all transpiled languages.  Even though
-                you get a lot of the same, the un-anticipated differences can
-                be as gnarly as.
             </aside>
           </section>
         </section>
