@@ -110,7 +110,7 @@
                   def render(self):
                       return React.createClass(
                           'input',
-                          [],
+                          {},
                           {
                             'onInput': self.on_input,
                             'type': 'text',
@@ -337,7 +337,8 @@
               src: 'node_modules/reveal.js/plugin/highlight/highlight.js',
               async: true,
               callback: function() { hljs.initHighlightingOnLoad(); }
-            }
+            },
+            { src: 'node_modules/reveal.js/plugin/notes/notes.js', async: true }
           ]
       });
     </script>
